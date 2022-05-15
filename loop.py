@@ -1,5 +1,5 @@
 import selectors, time
-from awaitebles import Task
+from awaitables import Task
 from typing import Set
 
 

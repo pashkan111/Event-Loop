@@ -15,6 +15,8 @@ class Client(HttpClientAbstract):
     request_string = '{method} {path} HTTP/1.1\r\n{headers}\r\n\r\n'
     
     def __init__(self):
+        self.status: int = None
+        self.data: str = None
         self._sock = AsyncSocket()
     
     def get_parsed_url(self, url: str, params: dict)-> URL:
@@ -49,7 +51,12 @@ class Client(HttpClientAbstract):
             headers=headers_string
             )
         return request_string
-
+    
+    def parse_response(self, response: bytes):
+        response_parts = response.split('\r\n')
+        self.status = response_parts[0].split(' ')[1]
+        self.data = response_parts[-1]
+        
     def get(self, url:str, params:dict=None, headers:dict={}):        
         parsed_url = self.get_parsed_url(url, params)
         yield from self._sock.connect(parsed_url.host, parsed_url.port)
@@ -59,7 +66,8 @@ class Client(HttpClientAbstract):
         yield from self._sock.send(request_string)
         data=yield from self._sock.read_all()
         data_decoded = data.decode('utf-8')
-        return data_decoded
-    
+        self.parse_response(data_decoded)
+        return self.data
+
     def post(self, url:str, params:dict, data:dict):
         pass

@@ -1,6 +1,6 @@
 import socket, selectors
 from loop import get_event_loop
-from awaitebles import Future
+from awaitables import Future
 
 
 class AsyncSocket:
@@ -56,11 +56,9 @@ class AsyncSocket:
         return (yield from future)
         
     def read_all(self):
-        print('read')
         data = bytearray()
         chunk = yield from self.read()
-        print(chunk)
         while chunk:
-            data.extend(data)
+            data.extend(chunk)
             chunk = yield from self.read()
-        return bytes(data)
+        return data

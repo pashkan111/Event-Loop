@@ -1,12 +1,18 @@
 from loop import get_event_loop
-from awaitebles import Task
+from awaitables import Task
 from http_client import Client
 
 
+def make_request():
+    results = []
+    for _ in range(100):
+        client = Client()
+        yield from client.get('https://soccer365.ru/games/1563678/')
+
+
 def main():
-    client = Client()
-    yield from client.get('http://localhost:8089/time')
-    
+    results = []
+    yield from make_request
 
 
 if __name__ == '__main__':
